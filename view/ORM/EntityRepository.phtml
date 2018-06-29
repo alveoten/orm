@@ -1,0 +1,16 @@
+<?="<?php", PHP_EOL?>
+
+namespace <?= $this->repositories_namespace; ?>;
+
+use Tabusoft\ORM\Repository\RepositoryAbstract;
+use <?= $this->repositories_descriptor_namespace; ?>\<?= $this->repository_descriptor_name ?>;
+
+class <?= $this->repository_name; ?> extends RepositoryAbstract
+{
+
+    use <?= $this->repository_descriptor_name; ?>;
+
+    /** insert here your repository specific methods */
+
+
+}

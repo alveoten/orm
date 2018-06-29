@@ -1,0 +1,135 @@
+<div class="qv_container">
+    <div class="qv_bar">
+        <div class="qv_db">
+            <div class="qv_collapse">
+                <button onclick="qv_toggle(this,'.qv_list_db');">
+                    <i class="fa fa-database"></i>
+                </button>
+            </div>
+            <div>
+                <div>Totale: <?= count($queries); ?> sql, <?= $numero_totale_query; ?> query</div>
+            </div>
+            <div>
+                <div>Tempo totale: <?= round($tempo_totale, 4); ?>s</div>
+            </div>
+        </div>
+        <div class="qv_super">
+            <div class="qv_collapse">
+                <button <?php if (count($_GET??[])): ?>onclick="qv_toggle(this,'.qv_list_get');"
+                        <?php else: ?>disabled<?php endif; ?>>
+                    <i class="fa fa-folder"></i>
+                    <?php if (count($_GET??[])): ?>
+                        <span class="badge bg-green"><?= count($_GET??[]); ?></span>
+                    <?php endif; ?>
+                    GET
+                </button>
+            </div>
+
+            <div class="qv_collapse">
+                <button <?php if (count($_POST??[])): ?>onclick="qv_toggle(this,'.qv_list_post');"
+                        <?php else: ?>disabled<?php endif; ?>>
+                    <i class="fa fa-folder"></i>
+                    <?php if (count($_POST??[])): ?>
+                        <span class="badge bg-green"><?= count($_POST??[]); ?></span>
+                    <?php endif; ?>
+                    POST
+                </button>
+            </div>
+            <div class="qv_collapse">
+                <button <?php if (count($_SESSION??[])): ?>onclick="qv_toggle(this,'.qv_list_session')"
+                        <?php else: ?>disabled<?php endif; ?>>
+                    <i class="fa fa-folder"></i>
+                    <?php if (count($_SESSION??[])): ?>
+                        <span class="badge bg-green"><?= count($_SESSION??[]); ?></span>
+                    <?php endif; ?>
+                    SESSION
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="qv_list qv_list_db">
+        <table class="table table-striped table-bordered" id="qv_query_table" width="100%" data-order='[[ 2, "desc" ]]'>
+            <thead>
+            <tr>
+                <th>
+                    file
+                </th>
+                <th>
+                    linea
+                </th>
+                <th>
+                    sql
+                </th>
+                <th>
+                    n° esecuzioni
+                </th>
+                <th>
+                    tempo totale
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            <?php $counter = 0;
+            foreach ($queries as $hash => $query):
+                $sql_preview = mb_substr(preg_replace("/\\s+/si"," ",$query["sql"]),0,100);
+                ?>
+                <tr>
+                    <td class=""><?= str_replace(APP_BASE_DIR, "", $query["file"]); ?></td>
+                    <td><?= $query["line"]; ?></td>
+                    <td class="sql_container">
+                        <i data-toggle="tooltip" title="formatta" class="fa fa-magic enlarge_your_query"></i>
+                        <div class="non_formatted">
+                            <?= $sql_preview ?>
+                            <?php if (mb_strlen($query["sql"]) > 100): ?>
+                                <?= "..." ?>
+                            <?php endif; ?>
+                        </div>
+                        <div class="formatted">
+                            <?= SqlFormatter::format($query["sql"]); ?>
+                        </div>
+                        <?php if (stripos(trim($query["sql"]), "select") !== false): ?>
+                            <button class="qv_explain" data-toggle="tooltip" title="query explain"
+                                    onclick="qv_explain(<?= $counter++; ?>,this)">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        <?php endif; ?>
+                    </td>
+                    <td class=""><?= $query["counter"]; ?></td>
+                    <td class=""><?= round($query["total_time"], 4); ?>s</td>
+                    <?php /*
+            <div class="qv_hash"><?= $hash; ?></div>
+            */ ?>
+                </tr>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+
+    <!---ul class="qv_list qv_list_db">
+        <?php foreach ($queries as $hash => $query): ?>
+            <li>
+                <div class="qv_file">file: <?= $query["file"]; ?>:<?= $query["line"]; ?></div>
+                <div class="qv_sql"><?= $query["sql"]; ?></div>
+                <div class="qv_counter">Lanciata: <?= $query["counter"]; ?> volte</div>
+                <div class="qv_total">Tempo totale: <?= round($query["total_time"], 4); ?>s</div>
+                <?php /*
+            <div class="qv_hash"><?= $hash; ?></div>
+            */ ?>
+                <div style="clear: both"></div>
+            </li>
+        <?php endforeach; ?>
+    </ul-->
+    <div class="qv_list qv_list_post">
+        <pre><?php var_dump($_POST??[]); ?></pre>
+    </div>
+    <div class="qv_list qv_list_get">
+        <pre><?php var_dump($_GET??[]); ?></pre>
+    </div>
+    <div class="qv_list qv_list_session">
+        <pre><?php var_dump($_SESSION??[]); ?></pre>
+    </div>
+
+    <div class="powered">PHP7 powered</div>
+</div>
+
+

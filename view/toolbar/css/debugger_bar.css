@@ -1,0 +1,134 @@
+.qv_container {
+    position: fixed;
+    bottom: 0;
+    background-color: black;
+    border-top: 2px solid #666;
+    width: 100%;
+    z-index: 1000000;
+}
+
+.qv_container .qv_bar {
+    padding: 10px;
+    height: 40px;
+}
+
+.qv_container .qv_bar div {
+    color: #ccc;
+    float: left;
+    padding: 0 10px 0 0;
+}
+
+.qv_container .qv_list {
+    display: none;
+}
+
+.qv_collapse button {
+    color: #fff;
+    background-color: #000;
+    border: #000;
+    outline:none;
+}
+
+.qv_list {
+    color: #333;
+    background-color: #f1f1f1;
+    overflow: scroll;
+    height: 500px;
+    list-style-image: none;
+    list-style-type: none;
+    padding: 10px 10px;
+}
+
+.qv_list li {
+    margin-bottom: 10px;
+}
+
+.qv_list li:nth-child(even) {
+    background-color: #FFD6B3;
+}
+
+.qv_file {
+    font-weight: bold;
+}
+
+.sql {
+    font-style: italic;
+}
+
+.qv_counter {
+    float: left;
+}
+
+.qv_total {
+    float: left;
+}
+
+body{
+    padding-bottom: 40px;
+}
+
+.qv_db{
+    float: left;
+    width: 75%;
+}
+
+.qv_super{
+    float: right;
+    width: 25%;
+}
+
+.qv_super .qv_collapse{
+    float: left;
+}
+
+.qv_db .qv_collapse{
+    float: left;
+}
+
+.qv_collapse{
+    position: relative;
+}
+
+.qv_collapse .badge{
+    font-size: 10px;
+    padding: 2px 4px !important;
+    position: absolute;
+    left: -2px;
+    bottom: -2px;
+}
+
+.qv_explain{
+    background-color: transparent;
+    border: none;
+    outline:none;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+}
+
+.powered{
+    position: absolute;
+    right: 5px;
+    bottom: 0;
+    font-style: italic;
+    color: #999;
+    font-size: 10px;
+}
+
+.enlarge_your_query{
+    cursor: pointer;
+    margin-right: 10px;
+    float:left;
+}
+
+.formatted{
+    display: none;
+}
+
+.qv_container td{
+    position: relative;
+}
+
+.non_formatted{
+    padding-right: 30px;
+}

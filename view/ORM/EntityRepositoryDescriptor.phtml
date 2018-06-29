@@ -1,0 +1,32 @@
+<?="<?php", PHP_EOL?>
+
+namespace <?= $this->repositories_descriptor_namespace; ?>;
+
+Trait <?= $this->repository_descriptor_name; ?>
+{
+    protected $table = "<?= $this->table_name ?>";
+    protected $database = "<?= $this->database ?>";
+    protected $database_hash = "<?= $this->database_hash; ?>";
+    protected $primary = "<?= $this->primary_key ?>";
+    protected $relatedEntity = '<?= $this->entities_namespace."\\".$this->entity_name; ?>';
+    protected $isView = <?=  ( ($this->is_view===true)? 'true':'false' ) ?>;
+    protected $host = '<?= $this->host; ?>';
+    protected $port = '<?= $this->port; ?>';
+
+    protected $relations = [
+        <?php foreach($this->relations as $k => $r): ?>"<?= $k; ?>" => [
+            <?php foreach($r as $key => $value): ?>"<?= $key?>" => "<?= $value ?>",
+            <?php endforeach;?>
+        ],
+        <?php endforeach;?>
+    ];
+    protected $tableColumnsDescription = [];
+
+    protected function setTableColumnsDescription(){
+        $this->tableColumnsDescription = [
+            <?php foreach($this->properties as $property): ?>"<?= trim($property["Field"]) ?>" => [ "type" =>  "<?= $property["Type"] ?>", "orm_type" => "<?= $property["orm_type"]; ?>"],
+            <?php endforeach; ?>
+        ];
+    }
+
+}

@@ -1,0 +1,61 @@
+<?="<?php", PHP_EOL?>
+
+namespace <?= $this->entities_descriptor_namespace; ?>;
+
+<?php foreach($this->use as $use): ?>
+use <?= $use; ?>;
+<?php endforeach; ?>
+
+/**
+*
+* @database <?= $this->database, PHP_EOL ?>
+* @table <?= $this->table_name, PHP_EOL ?>
+*
+**/
+
+trait <?= $this->entity_descriptor_name, PHP_EOL ?>
+{
+<?php foreach($this->properties as $property):?>
+
+    /**
+    *
+    * @protected <?= trim($property["Type"]), PHP_EOL ?>
+    */
+    protected $<?= trim($property["Field"]) ?>;
+<?php endforeach; ?>
+
+<?php foreach($this->properties as $property):?>
+
+    /**
+    *
+    * @return <?= trim($property["php_type"]), PHP_EOL ?>
+    */
+    public function get<?= ucfirst(trim($this->createEntityName($property["Field"]))) ?>(): <?= $property["php_type"], PHP_EOL; ?>
+    {
+        return $this-><?= trim($property["Field"]) ?>;
+    }
+
+    /**
+    *
+    * @var <?= $property["php_type"]," $",$property["Field"], PHP_EOL; ?>
+    */
+    public function set<?= ucfirst(trim($this->createEntityName($property["Field"]))) ?>( <?= $property["php_type"]; ?> $<?= trim($property["Field"]) ?> )
+    {
+        $this-><?= trim($property["Field"]) ?> = $<?= trim($property["Field"]) ?>;
+    }
+
+
+<?php endforeach; ?>
+
+<?php foreach($this->relations as $obj): ?>
+    /**
+    * @desc Lazi loading for <?= $obj["className"]; ?>
+    * @return <?= $obj["className"]; ?>
+    */
+    public function get<?= ucfirst($obj["className"]); ?>(): <?= $obj["className"]; ?>
+    {
+        return $this->lazyLoad(<?= $obj["className"]; ?>::class, $this-><?= $obj["id"]; ?>);
+    }
+
+<?php endforeach; ?>
+}
