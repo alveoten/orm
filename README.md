@@ -189,7 +189,7 @@ $res = $q->select( $ft, $fc, $fc->id->as("id") )
             ->where($fc->id, "IN (?)");
             ->query([1,2]);
 
-//res is a traversable stmt PDO object.
+//res is a traversable collection of: [ ForumTopic object, ForumCategory Object, id  ]
 foreach($res as $r){
     var_dump($r);
 }
