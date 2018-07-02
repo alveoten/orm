@@ -2,12 +2,11 @@
   "name": "tabusoft/orm",
   "description": "Simple ORM and entity manager",
   "type": "library",
-  "license": "proprietary",
+  "license": "GPL-3.0+",
 
   "authors": [
     {
       "name": "Marco Tabucchi",
-      "email": "marco@tabucchi.it",
       "role": "developer"
     }
   ],
@@ -31,7 +30,7 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "ORM\\Tests\\": "tests/"
+      "Tabusoft\\ORM\\Tests\\": "tests/"
     }
   }
 }
