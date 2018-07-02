@@ -111,9 +111,10 @@ class Configurator
 
         $option = $cli->getOpt();
 
-        if (!$cli->getValidity()) {
+        if (!$cli->getValidity() or count($GLOBALS["argv"]) ) {
             $cli->outError();
             $cli->outHelp();
+            exit;
         }
 
         $this->config = json_decode(file_get_contents($option[2]));

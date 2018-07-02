@@ -1,7 +1,7 @@
 #!/usr/bin/php
 <?php
 
-use ORM\Configurator\CreateConfig;
+use Tabusoft\ORM\Configurator\CreateConfig;
 
 define("APP_DIR", realpath( getcwd() ) );
 
