@@ -200,19 +200,19 @@ class EntityBuilder
 
         switch ($what) {
             case 'Entity':
-                $directories = array_merge($directories, explode("\\", $this->entities_namespace));
+                $directories = array_merge($directories, ["Entities"]);
                 $file = $this->entity_name;
                 break;
             case 'EntityDescriptor':
-                $directories = array_merge($directories, explode("\\", $this->entities_descriptor_namespace));
+                $directories = array_merge($directories, ["Entities","Descriptors"]);
                 $file = $this->entity_descriptor_name;
                 break;
             case 'Repository':
-                $directories = array_merge($directories, explode("\\", $this->repositories_namespace));
+                $directories = array_merge($directories, ["Repositories"]);
                 $file = $this->repository_name;
                 break;
             case 'RepositoryDescriptor':
-                $directories = array_merge($directories, explode("\\", $this->repositories_descriptor_namespace));
+                $directories = array_merge($directories, ["Repositories", "Descriptors"]);
                 $file = $this->repository_descriptor_name;
                 break;
             default:
