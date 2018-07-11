@@ -32,5 +32,7 @@
     "psr-4": {
       "Tabusoft\\ORM\\Tests\\": "tests/"
     }
-  }
+  },
+
+  "bin": ["bin/create-config.php", "bin/orm-cli.php"]
 }
