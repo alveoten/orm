@@ -200,8 +200,6 @@ class Configurator
     private function do($db_info, $options, $command_type)
     {
 
-        dump($db_info);
-
         $db_config = new DBFactoryConfig($db_info->host,$db_info->{"database-name"}, $db_info->username, $db_info->password, $db_info->port);
         $db = DBFactory::getInstance($db_config);
 
