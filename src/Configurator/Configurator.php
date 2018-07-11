@@ -111,7 +111,7 @@ class Configurator
 
         $option = $cli->getOpt();
 
-        if (!$cli->getValidity() or count($GLOBALS["argv"] !== 3) ) {
+        if (!$cli->getValidity() or count($GLOBALS["argv"]) !== 3 ) {
             $cli->outError();
             $cli->outHelp();
             exit;
