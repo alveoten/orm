@@ -30,7 +30,7 @@ class EQBFunction{
 
     public function compile()
     {
-        return "{$this->name}( ".trim(\ORM\EQB\EQBUtils::text_and_entities($this->separator,$this->arguments))." )";
+        return "{$this->name}( ".trim(EQBUtils::text_and_entities($this->separator,$this->arguments))." )";
     }
 
     public function __construct($name, $arguments, $separator)
