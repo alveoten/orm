@@ -235,9 +235,20 @@ class Configurator
                 $entity->renderRepositoryDescriptor();
             }
             else{
-                $this->outLn("\tCreate Entity Descriptor");
+
+                if( !file_exists($entity->getFilePath("", "Entity")) ) {
+                    $this->outLn("\tCreate Entity");
+                    $entity->renderEntity();
+                }
+
+                if( !file_exists($entity->getFilePath("", "Repository")) ) {
+                    $this->outLn("\tCreate Repository");
+                    $entity->renderRepository();
+                }
+
+                $this->outLn("\tUpdate Entity Descriptor");
                 $entity->renderEntityDescriptor();
-                $this->outLn("\tCreate Repository Descriptor");
+                $this->outLn("\tUpdate Repository Descriptor");
                 $entity->renderRepositoryDescriptor();
             }
 

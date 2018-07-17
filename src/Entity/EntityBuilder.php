@@ -176,8 +176,6 @@ class EntityBuilder
 
         }
 
-
-
     }
 
     public function renderEntityDescriptor()
@@ -188,7 +186,7 @@ class EntityBuilder
         file_put_contents($this->getFilePath("", "EntityDescriptor"), $content);
     }
 
-    private function getFilePath($position, $what)
+    public function getFilePath($position, $what)
     {
 
         $directories[] = APP_DIR;
