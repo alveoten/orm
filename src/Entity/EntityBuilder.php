@@ -12,6 +12,7 @@ namespace Tabusoft\ORM\Entity;
 use Aura\Cli\Exception;
 use Tabusoft\ORM\Configurator\Configurator;
 use Tabusoft\ORM\EQB\EQBException;
+use Tabusoft\ORM\Repository\RepositoryAbstract;
 
 class EntityBuilder
 {
@@ -91,7 +92,7 @@ class EntityBuilder
             $this->namespace = trim($this->namespace, "\\") . "\\";
         }
 
-        $this->entity_name = $this->createEntityName($this->table_name);
+        $this->entity_name = RepositoryAbstract::createEntityName($this->table_name);
         $this->entity_descriptor_name = $this->entity_name . "Descriptor";
 
         $this->repository_name = $this->entity_name . "Repository";
@@ -104,16 +105,6 @@ class EntityBuilder
         $this->repositories_descriptor_namespace = $this->namespace . "Repositories\\Descriptors";
 
 
-    }
-
-    private function createEntityName($entity_name)
-    {
-        $tableName = explode("_", $entity_name);
-        for ($i = 0; $i < count($tableName); $i++) {
-            $tableName[$i] = strtolower($tableName[$i]);
-            $tableName[$i] = ucfirst($tableName[$i]);
-        }
-        return implode("", $tableName);
     }
 
     private function createProperties()
@@ -132,6 +123,8 @@ class EntityBuilder
             }
             $property["orm_type"] = $this->findType($property['Type'], Configurator::$dataTypes);
             $property["php_type"] = $this->findType($property['Type'], Configurator::$php_dataTypes);
+            $property["nullable"] = ($property["Null"] === "YES")? true:false;
+
             $this->properties[] = $property;
         }
 
@@ -167,11 +160,11 @@ class EntityBuilder
                 "to" => $relation["REFERENCED_TABLE_NAME"],
                 "from_column" => $relation["COLUMN_NAME"],
                 "to_column" => $relation["REFERENCED_COLUMN_NAME"],
-                "className" => $this->createEntityName($relation["REFERENCED_TABLE_NAME"]),
+                "className" => RepositoryAbstract::createEntityName($relation["REFERENCED_TABLE_NAME"]),
                 "id" => $relation["COLUMN_NAME"]
             ];
 
-            $this->use[] = $this->entities_namespace."\\".$this->createEntityName($relation["REFERENCED_TABLE_NAME"]);
+            $this->use[] = $this->entities_namespace."\\".RepositoryAbstract::createEntityName($relation["REFERENCED_TABLE_NAME"]);
 
 
         }

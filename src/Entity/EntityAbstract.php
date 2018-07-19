@@ -9,24 +9,6 @@ class EntityAbstract implements \JsonSerializable{
     private static $repoCache = [];
     private static $lazy_cache = [];
 
-    public function __get($name)
-    {
-        if(!isset($name)){
-            throw new \Exception('Can\'t find: '.$name);
-        }
-        return $this->{$name};
-    }
-
-    public function __set($name, $value)
-    {
-        return $this->{$name} = $value;
-    }
-
-    public function __isset($name)
-    {
-        return isset($this->{$name});
-    }
-
     public function jsonSerialize()
     {
         return json_encode( get_object_vars($this) );

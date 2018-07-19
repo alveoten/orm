@@ -69,11 +69,8 @@ abstract class RepositoryAbstract
         $values = [];
         $types = [];
         foreach ($this->tableColumnsDescription as $column => $properties_info) {
-            if (!isset($entity->{$column})) {
-                $values[] = null;
-            } else {
-                $values[] = $entity->{$column};
-            }
+            $getter = self::getGetter($column);
+            $values[] = $entity->{$getter}();
             $types[] = '?';
         }
 
@@ -83,10 +80,13 @@ abstract class RepositoryAbstract
 
         $sql = "REPLACE INTO `{$this->table}` ({$fields_names_string})
 				VALUES ({$fields_values_string})";
-
         $this->db->query($sql, $values);
-        if ($entity->{$this->primary} === null) {
-            $entity->{$this->primary} = $this->db->lastInsertId();
+
+        $getter = self::getGetter($this->primary);
+        $primary = $entity->{$getter}();
+        if ($primary === null) {
+            $setter = self::getSetter($this->primary);
+            $entity->{$setter}( $this->db->lastInsertId() );
         }
     }
 
@@ -156,7 +156,8 @@ abstract class RepositoryAbstract
         $entityClass = $this->relatedEntity;
         $entity = new $entityClass();
         foreach (array_keys($this->tableColumnsDescription) as $property) {
-            $entity->{$property} = $row[$property];
+            $setter = self::getSetter($property);
+            $entity->{$setter}( $row[$property] );
         }
         return $entity;
     }
@@ -177,11 +178,13 @@ abstract class RepositoryAbstract
     public function delete($entities)
     {
         $ids = [];
-        if (!is_array($entities))
-            $ids = $entities->id;
+        if (!is_array($entities)) {
+            $ids[] = $entities->getId();
+        }
         else {
-            foreach ($entities as $e)
-                $ids[] = $e->id;
+            foreach ($entities as $e) {
+                $ids[] = $e->getId();
+            }
         }
 
         $sql = "DELETE FROM `{$this->table}` 
@@ -190,10 +193,11 @@ abstract class RepositoryAbstract
         $this->db->query($sql, [$ids]);
     }
 
+    //todo truncate referenced
     public function truncate()
     {
-        $sql = "TRUNCATE `{$this->table}`";
 
+        $sql = "TRUNCATE `{$this->table}`";
         $this->db->query($sql, []);
     }
 
@@ -212,4 +216,23 @@ abstract class RepositoryAbstract
         return $this->database_hash;
     }
 
+    public static function createEntityName($entity_name)
+    {
+        $tableName = explode("_", $entity_name);
+        for ($i = 0; $i < count($tableName); $i++) {
+            $tableName[$i] = strtolower($tableName[$i]);
+            $tableName[$i] = ucfirst($tableName[$i]);
+        }
+        return implode("", $tableName);
+    }
+
+    public static function getGetter($property)
+    {
+        return "get".ucfirst(self::createEntityName($property));
+    }
+
+    public static function getSetter($property)
+    {
+        return "set".ucfirst(self::createEntityName($property));
+    }
 }

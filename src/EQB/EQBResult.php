@@ -2,6 +2,8 @@
 
 namespace Tabusoft\ORM\EQB;
 
+use Tabusoft\ORM\Repository\RepositoryAbstract;
+
 class EQBResult implements \Iterator
 {
 
@@ -31,7 +33,8 @@ class EQBResult implements \Iterator
                 foreach ($row as $k => $value) {
                     if (strpos($k, $entity->alias) === 0) {
                         $property = str_replace($entity->alias, "", $k);
-                        $obj->{$property} = $value;
+                        $setter = RepositoryAbstract::getSetter($property);
+                        $obj->{$setter}($value);
                     }
                 }
                 $objects[$entity->alias] = $obj;

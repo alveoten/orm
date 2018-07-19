@@ -30,7 +30,7 @@ trait <?= $this->entity_descriptor_name, PHP_EOL ?>
     *
     * @return <?= trim($property["php_type"]), PHP_EOL ?>
     */
-    public function get<?= ucfirst(trim($this->createEntityName($property["Field"]))) ?>(): <?= $property["php_type"], PHP_EOL; ?>
+    public function <?= \Tabusoft\ORM\Repository\RepositoryAbstract::getGetter($property["Field"]) ?>()<?php if(PHP_VERSION >= "7.1" ): ?>: <?= $property["nullable"]? "?":"";?><?= $property["php_type"], PHP_EOL; ?><?php endif; ?><?php echo PHP_EOL; ?>
     {
         return $this-><?= trim($property["Field"]) ?>;
     }
@@ -39,7 +39,7 @@ trait <?= $this->entity_descriptor_name, PHP_EOL ?>
     *
     * @var <?= $property["php_type"]," $",$property["Field"], PHP_EOL; ?>
     */
-    public function set<?= ucfirst(trim($this->createEntityName($property["Field"]))) ?>( <?= $property["php_type"]; ?> $<?= trim($property["Field"]) ?> )
+    public function <?= Tabusoft\ORM\Repository\RepositoryAbstract::getSetter($property["Field"]) ?>( <?= $property["php_type"]; ?> $<?= trim($property["Field"]) ?> )
     {
         $this-><?= trim($property["Field"]) ?> = $<?= trim($property["Field"]) ?>;
     }
