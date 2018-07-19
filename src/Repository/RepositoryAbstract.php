@@ -68,18 +68,40 @@ abstract class RepositoryAbstract
 
         $values = [];
         $types = [];
-        foreach ($this->tableColumnsDescription as $column => $properties_info) {
-            $getter = self::getGetter($column);
-            $values[] = $entity->{$getter}();
-            $types[] = '?';
+        $primaryGetter = self::getGetter($this->primary);
+        if($entity->{$primaryGetter}() === null){
+
+            foreach ($this->tableColumnsDescription as $column => $properties_info) {
+                $getter = self::getGetter($column);
+                $values[] = $entity->{$getter}();
+                $types[] = '?';
+            }
+
+            $fields_names_string = "`" . implode("`,`", array_keys($this->tableColumnsDescription)) . "`";
+            $fields_values_string = implode(",", $types);
+
+            $sql = "REPLACE INTO `{$this->table}` ({$fields_names_string})
+				VALUES ({$fields_values_string})";
+        }
+        else{
+            $sql = "UPDATE `{$this->table}`
+                        SET ";
+            $update_column = [];
+            foreach($this->tableColumnsDescription as $column => $prop_info){
+                if( $column === $this->primary ) {
+                    continue;
+                }
+                else{
+                    $update_column[] = "{$column} = ?";
+                    $getter = self::getGetter($column);
+                    $values[] = $entity->{$getter}();
+                }
+            }
+            $sql .= implode(",".PHP_EOL, $update_column);
+            $sql .= PHP_EOL. "WHERE id = ?";
+            $values[] = $entity->{$primaryGetter}();
         }
 
-
-        $fields_names_string = "`" . implode("`,`", array_keys($this->tableColumnsDescription)) . "`";
-        $fields_values_string = implode(",", $types);
-
-        $sql = "REPLACE INTO `{$this->table}` ({$fields_names_string})
-				VALUES ({$fields_values_string})";
         $this->db->query($sql, $values);
 
         $getter = self::getGetter($this->primary);
