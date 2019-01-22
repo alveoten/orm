@@ -14,7 +14,7 @@
   "require": {
     "php": "^7.0",
     "tabusoft/db": "^1.0",
-    "tabusoft/cliManager": "^1.0",
+    "tabusoft/cli-manager": "^1.0",
     "jdorn/sql-formatter": "^1.0"
   },
 
