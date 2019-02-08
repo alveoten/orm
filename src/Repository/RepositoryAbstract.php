@@ -173,6 +173,36 @@ abstract class RepositoryAbstract
         throw new \Exception("Can't find in {$this->table} where {$key} " . (is_array($value) ? "In " . implode(",", $value) : " = " . $value));
     }
 
+    public function findByValues(array $keyValues)
+    {
+        $query = "SELECT * FROM " . $this->table . " 
+            WHERE ";
+
+        $where = [];
+        $values = [];
+        foreach( $keyValues as $key => $value){
+            if(!is_array($value)) {
+                $where[] = "`{$key}` = ?";
+                $values[] = $value;
+            }
+            else{
+                $where[] = "`{$key}` IN (".implode(", ", array_fill(0,count($value),"?")).")";
+                $values = array_merge($values,$value);
+            }
+        }
+
+        $query .= implode(" AND ", $where);
+
+        $result = $this->db->query($query, $values);
+
+        $return = [];
+        foreach ($result as $row){
+            $return[] = $this->objectByRow($row);
+        }
+        return $return;
+
+    }
+
     public function objectByRow($row)
     {
         $entityClass = $this->relatedEntity;
