@@ -184,6 +184,17 @@ abstract class RepositoryAbstract
         return $entity;
     }
 
+    public function rowByEntity($entity): array
+    {
+        $row = [];
+        foreach (array_keys($this->tableColumnsDescription) as $property) {
+            $getter = self::getGetter($property);
+            $row[ $property ] = $entity->{$getter}();
+        }
+
+        return $row;
+    }
+
     /**
      * @return array
      */
