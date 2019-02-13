@@ -169,6 +169,8 @@ class EntityBuilder
 
         }
 
+        $this->use = array_unique($this->use);
+
     }
 
     public function renderEntityDescriptor()
