@@ -123,7 +123,15 @@ class EntityBuilder
             }
             $property["orm_type"] = $this->findType($property['Type'], Configurator::$dataTypes);
             $property["php_type"] = $this->findType($property['Type'], Configurator::$php_dataTypes);
-            $property["nullable"] = ($property["Null"] === "YES")? true:false;
+            if($property["Null"] === "YES"){
+                $property["nullable"] = true;
+            }
+            else if ($property["Key"] === 'PRI') {
+                $property["nullable"] = true;
+            }
+            else{
+                $property["nullable"] = false;
+            }
 
             $this->properties[] = $property;
         }
