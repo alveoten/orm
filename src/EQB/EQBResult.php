@@ -29,15 +29,21 @@ class EQBResult implements \Iterator
         $objects = [];
         foreach ($this->entities as $entity){
             if($entity instanceof EQBEntity) {
-                $obj = new $entity->className();
-                foreach ($row as $k => $value) {
-                    if (strpos($k, $entity->alias) === 0) {
-                        $property = str_replace($entity->alias, "", $k);
-                        $setter = RepositoryAbstract::getSetter($property);
-                        $obj->{$setter}($value);
+                try {
+                    $obj = new $entity->className();
+                    foreach ($row as $k => $value) {
+                        if (strpos($k, $entity->alias) === 0) {
+                            $property = str_replace($entity->alias, "", $k);
+                            $setter = RepositoryAbstract::getSetter($property);
+                            $obj->{$setter}($value);
+                        }
                     }
                 }
+                catch(\Exception $e){
+                    $obj = null;
+                }
                 $objects[$entity->alias] = $obj;
+
             }
             else if( ($entity instanceof EQBColumn)
                     OR ($entity instanceof EQBFunction)){
