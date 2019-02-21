@@ -39,7 +39,7 @@ class EQBResult implements \Iterator
                         }
                     }
                 }
-                catch(\Exception $e){
+                catch(\TypeError $e){
                     $obj = null;
                 }
                 $objects[$entity->alias] = $obj;
