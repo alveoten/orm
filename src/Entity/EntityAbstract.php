@@ -11,13 +11,18 @@ class EntityAbstract implements \JsonSerializable{
 
     public function jsonSerialize()
     {
+        return $this->toArray();
+    }
+
+    public function toArray()
+    {
         $repo = self::getRepository();
         $column = $repo->getTableColumnsDescription();
         $return = [];
         foreach ($column as $k => $descr){
             $return[$k] = $this->{$k};
         }
-        return json_encode( $return );
+        return $return;
     }
 
     public static function getRepository(): RepositoryAbstract {
