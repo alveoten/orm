@@ -80,7 +80,7 @@ abstract class RepositoryAbstract
             $fields_names_string = "`" . implode("`,`", array_keys($this->tableColumnsDescription)) . "`";
             $fields_values_string = implode(",", $types);
 
-            $sql = "REPLACE INTO `{$this->table}` ({$fields_names_string})
+            $sql = "INSERT INTO `{$this->table}` ({$fields_names_string})
 				VALUES ({$fields_values_string})";
         }
         else{
