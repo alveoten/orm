@@ -209,7 +209,12 @@ abstract class RepositoryAbstract
         $entity = new $entityClass();
         foreach (array_keys($this->tableColumnsDescription) as $property) {
             $setter = self::getSetter($property);
-            $entity->{$setter}( $row[$property]??null );
+            if(isset($row[$property])) {
+                $entity->{$setter}($row[$property]);
+            }
+            else {
+                $entity->{$setter}(null);
+            }
         }
         return $entity;
     }
