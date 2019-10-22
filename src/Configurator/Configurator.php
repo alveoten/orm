@@ -55,7 +55,8 @@ class Configurator
             "BLOB" => "blob",
             "MEDIUMBLOB" => "blob",
 
-            "ENUM" => "text"
+            "ENUM" => "text",
+            "SET" => "text"
     ];
 
     static $php_dataTypes = [
@@ -111,7 +112,7 @@ class Configurator
 
         $option = $cli->getOpt();
 
-        if (!$cli->getValidity() or count($GLOBALS["argv"]) !== 3 ) {
+        if (!$cli->getValidity() or count($GLOBALS["argv"]) ) {
             $cli->outError();
             $cli->outHelp();
             exit;
@@ -200,6 +201,8 @@ class Configurator
     private function do($db_info, $options, $command_type)
     {
 
+        dump($db_info);
+
         $db_config = new DBFactoryConfig($db_info->host,$db_info->{"database-name"}, $db_info->username, $db_info->password, $db_info->port);
         $db = DBFactory::getInstance($db_config);
 
@@ -235,20 +238,9 @@ class Configurator
                 $entity->renderRepositoryDescriptor();
             }
             else{
-
-                if( !file_exists($entity->getFilePath("", "Entity")) ) {
-                    $this->outLn("\tCreate Entity");
-                    $entity->renderEntity();
-                }
-
-                if( !file_exists($entity->getFilePath("", "Repository")) ) {
-                    $this->outLn("\tCreate Repository");
-                    $entity->renderRepository();
-                }
-
-                $this->outLn("\tUpdate Entity Descriptor");
+                $this->outLn("\tCreate Entity Descriptor");
                 $entity->renderEntityDescriptor();
-                $this->outLn("\tUpdate Repository Descriptor");
+                $this->outLn("\tCreate Repository Descriptor");
                 $entity->renderRepositoryDescriptor();
             }
 
