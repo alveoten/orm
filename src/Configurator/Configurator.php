@@ -112,7 +112,7 @@ class Configurator
 
         $option = $cli->getOpt();
 
-        if (!$cli->getValidity() or count($GLOBALS["argv"]) ) {
+        if (!$cli->getValidity() or !count($GLOBALS["argv"]) ) {
             $cli->outError();
             $cli->outHelp();
             exit;
@@ -201,8 +201,6 @@ class Configurator
     private function do($db_info, $options, $command_type)
     {
 
-        dump($db_info);
-
         $db_config = new DBFactoryConfig($db_info->host,$db_info->{"database-name"}, $db_info->username, $db_info->password, $db_info->port);
         $db = DBFactory::getInstance($db_config);
 
@@ -238,9 +236,9 @@ class Configurator
                 $entity->renderRepositoryDescriptor();
             }
             else{
-                $this->outLn("\tCreate Entity Descriptor");
+                $this->outLn("\tUpdate Entity Descriptor");
                 $entity->renderEntityDescriptor();
-                $this->outLn("\tCreate Repository Descriptor");
+                $this->outLn("\tUpdate Repository Descriptor");
                 $entity->renderRepositoryDescriptor();
             }
 
