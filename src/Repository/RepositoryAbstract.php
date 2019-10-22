@@ -114,7 +114,7 @@ abstract class RepositoryAbstract
         }
 
         if (is_callable(self::$postSaveAction) ){
-            call_user_func(self::$postSaveAction);
+            call_user_func(self::$postSaveAction,$entity);
         }
     }
 
