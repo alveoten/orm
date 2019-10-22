@@ -14,6 +14,8 @@ abstract class RepositoryAbstract
      */
     protected $db = null; //zf3 adapter
 
+    public static $postSaveAction = null;
+
     /**
      * RepositoryAbstract constructor.
      * @param array $database_info
@@ -109,6 +111,10 @@ abstract class RepositoryAbstract
         if ($primary === null) {
             $setter = self::getSetter($this->primary);
             $entity->{$setter}( $this->db->lastInsertId() );
+        }
+
+        if (is_callable(self::$postSaveAction) ){
+            call_user_func(self::$postSaveAction);
         }
     }
 
