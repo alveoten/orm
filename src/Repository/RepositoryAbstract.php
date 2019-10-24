@@ -15,6 +15,7 @@ abstract class RepositoryAbstract
     protected $db = null; //zf3 adapter
 
     public static $postSaveAction = null;
+    public static $postDeleteAction = null;
 
     /**
      * RepositoryAbstract constructor.
@@ -265,6 +266,10 @@ abstract class RepositoryAbstract
                   WHERE id IN (?)";
 
         $this->db->query($sql, [$ids]);
+
+        if (is_callable(self::$postDeleteAction) ){
+            call_user_func(self::$postDeleteAction,$entities);
+        }
     }
 
     //todo truncate referenced
