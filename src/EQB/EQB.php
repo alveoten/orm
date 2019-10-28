@@ -363,8 +363,11 @@ class EQB
     private function _where($arguments)
     {
         $this->checkChain('where');
-
-        $this->query_pieces['where'] = EQBUtils::text_and_entities('WHERE', $arguments);
+        if(!isset($this->query_pieces['where'])){
+            $this->query_pieces['where'] = EQBUtils::text_and_entities('WHERE', $arguments);
+        } else {
+            $this->query_pieces['where'] .= EQBUtils::text_and_entities(' ', $arguments);
+        }
     }
 
     private function _groupby($arguments)
