@@ -18,45 +18,45 @@ class Configurator
 {
     static $dataTypes = [
 
-            "CHAR" => "text",
-            "VARCHAR" => "text",
-            "TINYTEXT" => "text",
-            "TEXT" => "text",
-            "MEDIUMTEXT" => "text",
-            "LONGTEXT" => "text",
-            "BINARY" => "text",
-            "VARBINARY" => "text",
+        "CHAR" => "text",
+        "VARCHAR" => "text",
+        "TINYTEXT" => "text",
+        "TEXT" => "text",
+        "MEDIUMTEXT" => "text",
+        "LONGTEXT" => "text",
+        "BINARY" => "text",
+        "VARBINARY" => "text",
 
-            "TINYINT" => "integer",
-            "SMALLINT" => "integer",
-            "MEDIUMINT" => "integer",
-            "INT" => "integer",
-            "INTEGER" => "integer",
-            "BIGINT" => "integer",
+        "TINYINT" => "integer",
+        "SMALLINT" => "integer",
+        "MEDIUMINT" => "integer",
+        "INT" => "integer",
+        "INTEGER" => "integer",
+        "BIGINT" => "integer",
 
-            "BIT" => "numeric",
-            "DECIMAL" => "numeric",
-            "DEC" => "numeric",
-            "NUMERIC" => "numeric",
-            "FIXED" => "numeric",
-            "FLOAT" => "numeric",
-            "DOUBLE" => "numeric",
-            "REAL" => "numeric",
-            "BOOL" => "numeric",
-            "BOOLEAN" => "numeric",
+        "BIT" => "numeric",
+        "DECIMAL" => "numeric",
+        "DEC" => "numeric",
+        "NUMERIC" => "numeric",
+        "FIXED" => "numeric",
+        "FLOAT" => "numeric",
+        "DOUBLE" => "numeric",
+        "REAL" => "numeric",
+        "BOOL" => "numeric",
+        "BOOLEAN" => "numeric",
 
-            "DATE" => "datetime",
-            "DATETIME" => "datetime",
-            "TIMESTAMP" => "datetime",
-            "TIME" => "datetime",
-            "YEAR" => "datetime",
+        "DATE" => "datetime",
+        "DATETIME" => "datetime",
+        "TIMESTAMP" => "datetime",
+        "TIME" => "datetime",
+        "YEAR" => "datetime",
 
-            "TINYBLOB" => "blob",
-            "BLOB" => "blob",
-            "MEDIUMBLOB" => "blob",
+        "TINYBLOB" => "blob",
+        "BLOB" => "blob",
+        "MEDIUMBLOB" => "blob",
 
-            "ENUM" => "text",
-            "SET" => "text"
+        "ENUM" => "text",
+        "SET" => "text"
     ];
 
     static $php_dataTypes = [
@@ -112,7 +112,7 @@ class Configurator
 
         $option = $cli->getOpt();
 
-        if (!$cli->getValidity() or !count($GLOBALS["argv"]) ) {
+        if (!$cli->getValidity() or !count($GLOBALS["argv"])) {
             $cli->outError();
             $cli->outHelp();
             exit;
@@ -120,22 +120,21 @@ class Configurator
 
         $this->config = json_decode(file_get_contents($option[2]));
 
-        foreach(["--table-name","--database"] as $opt) {
+        foreach (["--table-name", "--database"] as $opt) {
             if (isset($option[$opt])) {
                 $option[$opt] = explode(",", $option[$opt]);
             }
         }
 
-        if(isset($option["--database"])){
+        if (isset($option["--database"])) {
             $dbs = $option["--database"];
-        }
-        else{
+        } else {
             $dbs = array_keys((array)$this->config);
         }
 
-        foreach($this->config as $db_name => $db_info) {
+        foreach ($this->config as $db_name => $db_info) {
 
-            $this->do($db_info,$option,$option[1]);
+            $this->do($db_info, $option, $option[1]);
         }
 
         $this->outLn("");
@@ -179,9 +178,9 @@ class Configurator
     private function injectDBConfig()
     {
 
-        foreach($this->config as $db_name => $infos){
+        foreach ($this->config as $db_name => $infos) {
 
-            $db = DBFactory::getInstance( new DBFactoryConfig(
+            $db = DBFactory::getInstance(new DBFactoryConfig(
                     $this->config->{$db_name}->host,
                     $this->config->{$db_name}->{"database-name"},
                     $this->config->{$db_name}->username,
@@ -201,12 +200,12 @@ class Configurator
     private function do($db_info, $options, $command_type)
     {
 
-        $db_config = new DBFactoryConfig($db_info->host,$db_info->{"database-name"}, $db_info->username, $db_info->password, $db_info->port);
+        $db_config = new DBFactoryConfig($db_info->host, $db_info->{"database-name"}, $db_info->username, $db_info->password, $db_info->port);
         $db = DBFactory::getInstance($db_config);
 
         $tables = $db->query("SHOW FULL TABLES;");
-        foreach($tables as $table){
-            if(isset($options["--table-name"]) AND !in_array($table[0], $options["--table-name"])){
+        foreach ($tables as $table) {
+            if (isset($options["--table-name"]) AND !in_array($table[0], $options["--table-name"])) {
                 continue;
             }
 
@@ -215,17 +214,17 @@ class Configurator
             $db_name = $db_info->{"database-name"};
 
             $entity = new EntityBuilder($db,
-                                        $db_info->{"database-name"},
-                                        $db_config->getHash(),
-                                        $db_config->getHost(),
-                                        $db_config->getPort(),
-                                        $table[0],
-                                        $table[1],
-                                        $this->config->{$db_name}->namespace,
-                                        $this->config->{$db_name}->{"entity-directory"}
+                $db_info->{"database-name"},
+                $db_config->getHash(),
+                $db_config->getHost(),
+                $db_config->getPort(),
+                $table[0],
+                $table[1],
+                $this->config->{$db_name}->namespace,
+                $this->config->{$db_name}->{"entity-directory"}
             );
 
-            if($command_type == "install") {
+            if ($command_type == "install") {
                 $this->outLn("\tCreate Entity");
                 $entity->renderEntity();
                 $this->outLn("\tCreate Repository");
@@ -234,10 +233,18 @@ class Configurator
                 $entity->renderEntityDescriptor();
                 $this->outLn("\tCreate Repository Descriptor");
                 $entity->renderRepositoryDescriptor();
-            }
-            else{
+            } else {
+                if (!file_exists($entity->getFilePath("", "Entity"))) {
+                    $this->outLn("\tCreate Entity");
+                    $entity->renderEntity();
+                }
                 $this->outLn("\tUpdate Entity Descriptor");
                 $entity->renderEntityDescriptor();
+
+                if (!file_exists($entity->getFilePath("", "Repository"))) {
+                    $this->outLn("\tCreate Repository");
+                    $entity->renderRepository();
+                }
                 $this->outLn("\tUpdate Repository Descriptor");
                 $entity->renderRepositoryDescriptor();
             }
@@ -259,7 +266,8 @@ class Configurator
         return "NOT_FOUND";
     }
 
-    private function outLn($message){
-        echo PHP_EOL.$message;
+    private function outLn($message)
+    {
+        echo PHP_EOL . $message;
     }
 }
