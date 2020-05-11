@@ -31,6 +31,7 @@ class Configurator
         "SMALLINT" => "integer",
         "MEDIUMINT" => "integer",
         "INT" => "integer",
+        "INT UNSIGNED" => "integer",
         "INTEGER" => "integer",
         "BIGINT" => "integer",
 
@@ -75,6 +76,7 @@ class Configurator
         "SMALLINT" => 'int',
         "MEDIUMINT" => 'int',
         "INT" => 'int',
+        "INT UNSIGNED" => "int",
         "INTEGER" => 'int',
         "BIGINT" => 'int',
         "BIT" => 'int',
