@@ -28,6 +28,7 @@ class Configurator
         "VARBINARY" => "text",
 
         "TINYINT" => "integer",
+        "TINYINT UNSIGNED" => "int",
         "SMALLINT" => "integer",
         "MEDIUMINT" => "integer",
         "INT" => "integer",
@@ -73,6 +74,7 @@ class Configurator
         "SET" => "string",
 
         "TINYINT" => 'int',
+        "TINYINT UNSIGNED" => "int",
         "SMALLINT" => 'int',
         "MEDIUMINT" => 'int',
         "INT" => 'int',
