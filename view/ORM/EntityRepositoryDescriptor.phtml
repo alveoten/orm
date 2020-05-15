@@ -2,7 +2,10 @@
 
 namespace <?= $this->repositories_descriptor_namespace; ?>;
 
-Trait <?= $this->repository_descriptor_name; ?>
+use <?= $this->entities_namespace?>\<?= $this->entity_name; ?>;
+use Exception;
+
+trait <?= $this->repository_descriptor_name . PHP_EOL; ?>
 {
     protected $table = "<?= $this->table_name ?>";
     protected $database = "<?= $this->database ?>";
@@ -22,11 +25,59 @@ Trait <?= $this->repository_descriptor_name; ?>
     ];
     protected $tableColumnsDescription = [];
 
-    protected function setTableColumnsDescription(){
+    protected function setTableColumnsDescription()
+    {
         $this->tableColumnsDescription = [
             <?php foreach($this->properties as $property): ?>"<?= trim($property["Field"]) ?>" => [ "type" =>  "<?= $property["Type"] ?>", "orm_type" => "<?= $property["orm_type"]; ?>"],
             <?php endforeach; ?>
         ];
     }
 
+    /**
+    * Find by values
+    *
+    * @param string $name
+    * @param string $value
+    * @return <?= $this->entity_name; ?>[]
+    * @throws Exception
+    */
+    public function findBy(string $name, string $value)
+    {
+        return parent::findBy($name, $value);
+    }
+
+    /**
+    * Get all
+    *
+    * @return <?= $this->entity_name; ?>[]
+    * @throws Exception
+    */
+    public function findAll(): array
+    {
+        return parent::findAll();
+    }
+
+    /**
+    * Find By key value pairs
+    *
+    * @param string[] $keyValues
+    * @return <?= $this->entity_name; ?>[]
+    * @throws Exception
+    */
+    public function findByValues(array $keyValues): array
+    {
+        return parent::findByValues($keyValues);
+    }
+
+    /**
+    * Find by primary id
+    *
+    * @param int $id
+    * @return <?= $this->entity_name . PHP_EOL; ?>
+    * @throws Exception
+    */
+    public function findById(int $id): <?= $this->entity_name . PHP_EOL; ?>
+    {
+        return parent::findById($id);
+    }
 }
