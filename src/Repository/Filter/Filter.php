@@ -8,7 +8,7 @@ class Filter
 {
     private string $colum;
     private AbstractOperator $operator;
-    private mixed $value;
+    private $value;
 
     /**
      * Filter constructor.
@@ -17,7 +17,7 @@ class Filter
      * @param AbstractOperator $operator
      * @param mixed|null $value
      */
-    public function __construct(string $column, AbstractOperator $operator, mixed $value = null)
+    public function __construct(string $column, AbstractOperator $operator, $value = null)
     {
         $this->colum = $column;
         $this->operator = $operator;
