@@ -41,7 +41,7 @@ trait <?= $this->repository_descriptor_name . PHP_EOL; ?>
     * @return <?= $this->entity_name; ?>[]
     * @throws Exception
     */
-    public function findBy(string $name, string $value)
+    public function findBy($name, $value)
     {
         return parent::findBy($name, $value);
     }
@@ -76,7 +76,7 @@ trait <?= $this->repository_descriptor_name . PHP_EOL; ?>
     * @return <?= $this->entity_name . PHP_EOL; ?>
     * @throws Exception
     */
-    public function findById(int $id): <?= $this->entity_name . PHP_EOL; ?>
+    public function findById($id): <?= $this->entity_name . PHP_EOL; ?>
     {
         return parent::findById($id);
     }

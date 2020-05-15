@@ -5,6 +5,7 @@ namespace Tabusoft\ORM\Repository;
 use Tabusoft\DB\DB;
 use Tabusoft\DB\DBFactory;
 use Tabusoft\ORM\Entity\EntityAbstract;
+use Tabusoft\ORM\Repository\Filter\Filter;
 
 abstract class RepositoryAbstract
 {
@@ -16,6 +17,7 @@ abstract class RepositoryAbstract
 
     public static $postSaveAction = null;
     public static $postDeleteAction = null;
+    public int $last_filter_tot_rows = 0;
 
     /**
      * RepositoryAbstract constructor.
@@ -72,7 +74,7 @@ abstract class RepositoryAbstract
         $values = [];
         $types = [];
         $primaryGetter = self::getGetter($this->primary);
-        if($entity->{$primaryGetter}() === null){
+        if ($entity->{$primaryGetter}() === null) {
 
             foreach ($this->tableColumnsDescription as $column => $properties_info) {
                 $getter = self::getGetter($column);
@@ -85,23 +87,21 @@ abstract class RepositoryAbstract
 
             $sql = "INSERT INTO `{$this->table}` ({$fields_names_string})
 				VALUES ({$fields_values_string})";
-        }
-        else{
+        } else {
             $sql = "UPDATE `{$this->table}`
                         SET ";
             $update_column = [];
-            foreach($this->tableColumnsDescription as $column => $prop_info){
-                if( $column === $this->primary ) {
+            foreach ($this->tableColumnsDescription as $column => $prop_info) {
+                if ($column === $this->primary) {
                     continue;
-                }
-                else{
+                } else {
                     $update_column[] = "{$column} = ?";
                     $getter = self::getGetter($column);
                     $values[] = $entity->{$getter}();
                 }
             }
-            $sql .= implode(",".PHP_EOL, $update_column);
-            $sql .= PHP_EOL. "WHERE id = ?";
+            $sql .= implode("," . PHP_EOL, $update_column);
+            $sql .= PHP_EOL . "WHERE id = ?";
             $values[] = $entity->{$primaryGetter}();
         }
 
@@ -111,11 +111,11 @@ abstract class RepositoryAbstract
         $primary = $entity->{$getter}();
         if ($primary === null) {
             $setter = self::getSetter($this->primary);
-            $entity->{$setter}( $this->db->lastInsertId() );
+            $entity->{$setter}($this->db->lastInsertId());
         }
 
-        if (is_callable(self::$postSaveAction) ){
-            call_user_func(self::$postSaveAction,$entity);
+        if (is_callable(self::$postSaveAction)) {
+            call_user_func(self::$postSaveAction, $entity);
         }
     }
 
@@ -142,22 +142,12 @@ abstract class RepositoryAbstract
     public function findBy($key, $value)
     {
 
-        if ($this->tableColumnsDescription[$key]["orm_type"] === 'integer') {
-            if (is_array($value)) {
-                $placeholder = 'IN (?)';
-                $return_array = true;
-            } else {
-                $placeholder = '= ?';
-                $return_array = false;
-            }
+        if (is_array($value)) {
+            $placeholder = 'IN (?)';
+            $return_array = true;
         } else {
-            if (is_array($value)) {
-                $placeholder = 'IN (?)';
-                $return_array = true;
-            } else {
-                $placeholder = '= ?';
-                $return_array = false;
-            }
+            $placeholder = '= ?';
+            $return_array = false;
         }
 
         $result = $this->db->query("SELECT * FROM " . $this->table . " WHERE `{$key}` {$placeholder}", [$value]);
@@ -169,7 +159,7 @@ abstract class RepositoryAbstract
                 $return[$elem[$this->primary]] = $this->objectByRow($elem);
             }
 
-            if ($return_array === false AND $result->rowCount() === 1) {
+            if ($return_array === false and $result->rowCount() === 1) {
                 reset($return);
                 return current($return);
             }
@@ -187,14 +177,13 @@ abstract class RepositoryAbstract
 
         $where = [];
         $values = [];
-        foreach( $keyValues as $key => $value){
-            if(!is_array($value)) {
+        foreach ($keyValues as $key => $value) {
+            if (!is_array($value)) {
                 $where[] = "`{$key}` = ?";
                 $values[] = $value;
-            }
-            else{
-                $where[] = "`{$key}` IN (".implode(", ", array_fill(0,count($value),"?")).")";
-                $values = array_merge($values,$value);
+            } else {
+                $where[] = "`{$key}` IN (" . implode(", ", array_fill(0, count($value), "?")) . ")";
+                $values = array_merge($values, $value);
             }
         }
 
@@ -203,11 +192,76 @@ abstract class RepositoryAbstract
         $result = $this->db->query($query, $values);
 
         $return = [];
-        foreach ($result as $row){
+        foreach ($result as $row) {
             $return[] = $this->objectByRow($row);
         }
         return $return;
 
+    }
+
+    /**
+     * Filter the table with the passing values
+     *
+     * @param Filter[] $filters
+     * @param string $sort
+     * @param string $direction
+     * @param int $row_in_page
+     * @param int $offset
+     */
+    public function filter(array $filters, string $sort = "KEY", string $direction = "ASC", int $row_in_page = 25, int $offset = 0)
+    {
+
+        $query = "SELECT * FROM " . $this->table . PHP_EOL .
+            "WHERE ";
+        $count_query = "SELECT count(*) as tot FROM " . $this->table . PHP_EOL .
+            "WHERE ";
+
+        //build where
+        $condition = [];
+        foreach ($filters as $filter) {
+            $condition[] = $filter->compile();
+        }
+
+        if (count($condition) === 0) {
+            throw new \Exception("invalid filters number in filter method");
+        }
+        $conditions = implode(PHP_EOL . "AND ", $condition);
+        $query .= $conditions;
+        $count_query .= $conditions;
+
+        $values = [];
+        foreach ($filters as $filter) {
+            $val = $filter->getValue();
+            if(is_array($val)){
+                $values = array_merge($values, $val);
+            } else {
+                $values[] = $val;
+            }
+        }
+
+        //build order by
+        if ($sort === 'KEY') {
+            $sort = $this->primary;
+        }
+        $query .= PHP_EOL . "ORDER BY {$sort} {$direction}";
+
+        //build limit
+        $offset = $offset * $row_in_page;
+        $limit = PHP_EOL . "LIMIT {$offset}, {$row_in_page}";
+
+        $result = $this->db->query($query . $limit, $values);
+
+        $return = [];
+        foreach ($result as $row) {
+            $return[] = $this->objectByRow($row);
+        }
+
+        $result = $this->db->query($count_query, $values);
+        foreach ($result as $row) {
+            $this->last_filter_tot_rows = $row["tot"];
+        }
+
+        return $return;
     }
 
     public function objectByRow($row)
@@ -216,10 +270,9 @@ abstract class RepositoryAbstract
         $entity = new $entityClass();
         foreach (array_keys($this->tableColumnsDescription) as $property) {
             $setter = self::getSetter($property);
-            if(isset($row[$property])) {
+            if (isset($row[$property])) {
                 $entity->{$setter}($row[$property]);
-            }
-            else {
+            } else {
                 $entity->{$setter}(null);
             }
         }
@@ -231,7 +284,7 @@ abstract class RepositoryAbstract
         $row = [];
         foreach (array_keys($this->tableColumnsDescription) as $property) {
             $getter = self::getGetter($property);
-            $row[ $property ] = $entity->{$getter}();
+            $row[$property] = $entity->{$getter}();
         }
 
         return $row;
@@ -255,8 +308,7 @@ abstract class RepositoryAbstract
         $ids = [];
         if (!is_array($entities)) {
             $ids[] = $entities->getId();
-        }
-        else {
+        } else {
             foreach ($entities as $e) {
                 $ids[] = $e->getId();
             }
@@ -267,8 +319,8 @@ abstract class RepositoryAbstract
 
         $this->db->query($sql, [$ids]);
 
-        if (is_callable(self::$postDeleteAction) ){
-            call_user_func(self::$postDeleteAction,$entities);
+        if (is_callable(self::$postDeleteAction)) {
+            call_user_func(self::$postDeleteAction, $entities);
         }
     }
 
@@ -307,11 +359,19 @@ abstract class RepositoryAbstract
 
     public static function getGetter($property)
     {
-        return "get".ucfirst(self::createEntityName($property));
+        return "get" . ucfirst(self::createEntityName($property));
     }
 
     public static function getSetter($property)
     {
-        return "set".ucfirst(self::createEntityName($property));
+        return "set" . ucfirst(self::createEntityName($property));
+    }
+
+    /**
+     * @return int
+     */
+    public function getLastFilterTotRows(): int
+    {
+        return $this->last_filter_tot_rows;
     }
 }
