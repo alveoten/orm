@@ -374,4 +374,5 @@ abstract class RepositoryAbstract
     {
         return $this->last_filter_tot_rows;
     }
+    
 }
