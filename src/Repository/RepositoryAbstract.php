@@ -223,7 +223,7 @@ abstract class RepositoryAbstract
         }
 
         if (count($condition) === 0) {
-            throw new \Exception("invalid filters number in filter method");
+            $condition[] = "1";
         }
         $conditions = implode(PHP_EOL . "AND ", $condition);
         $query .= $conditions;
