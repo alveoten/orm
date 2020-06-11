@@ -38,6 +38,11 @@ abstract class RepositoryAbstract
         $this->db = DBFactory::getInstanceByHash($this->database_hash);
     }
 
+    public function getRelatedEntity(): string
+    {
+        return $this->relatedEntity;
+    }
+
     abstract protected function setTableColumnsDescription();
 
     public function getTableColumnsDescription()
